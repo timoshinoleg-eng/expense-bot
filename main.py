@@ -9,6 +9,7 @@ from utils.google_sheets import get_employees_from_sheet
 
 async def main():
     # Настройка логирования
+    from middlewares.fsm_timeout import FSMTimeoutMiddleware
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s"
@@ -41,6 +42,7 @@ async def main():
     # Подключаем роутеры
     dp.include_router(start.router)
     dp.include_router(expense_flow.router)
+        dp.message.middleware(FSMTimeoutMiddleware(timeout_minutes=5))
     dp.include_router(admin.router)
     
     logger.info("✅ Бот запущен и готов к работе")
