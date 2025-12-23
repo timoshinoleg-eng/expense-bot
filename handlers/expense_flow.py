@@ -142,7 +142,7 @@ async def save_expense(message: Message, state: FSMContext, is_admin: bool):
     data = await state.get_data()
     timestamp = f"{data['date']} {data['time']}"
     file_id = data.get("photo_file_id", "") or "Нет чека"
-     row = [
+    row = [
         data["user_first_name"],
         data["user_last_name"],
         timestamp,
