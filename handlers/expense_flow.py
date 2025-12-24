@@ -142,8 +142,8 @@ async def save_expense(message: Message, state: FSMContext, is_admin: bool):
     data = await state.get_data()
     timestamp = f"{data['date']} {data['time']}"
     file_id = data.get("photo_file_id", "") or "Нет чека"
-row = [
-    data["user_first_name"],
+    row = [  # ✅ Исправлен отступ
+        data["user_first_name"],
         data["user_last_name"],
         timestamp,
         data["amount"],
@@ -168,7 +168,8 @@ row = [
     await state.clear()
 
     # Возврат в главное меню
-keyboard = get_user_menu()    await message.answer("Выберите дальнейшее действие:", reply_markup=keyboard)
+    keyboard = get_admin_menu() if is_admin else get_user_menu()  # ✅ Исправлено: разделено на отдельные строки
+    await message.answer("Выберите дальнейшее действие:", reply_markup=keyboard)
 
 
 @router.message(ExpenseStates.waiting_for_confirmation, F.text == "Отменить")
@@ -176,5 +177,6 @@ async def cancel_expense(message: Message, state: FSMContext, is_admin: bool):
     await state.clear()
     await message.answer("Запись отменена", reply_markup=ReplyKeyboardRemove())
 
-    # Возв
-keyboard = get_user_menu()    await message.answer("Выберите дальнейшее действие:", reply_markup=keyboard)
+    # Возврат в главное меню
+    keyboard = get_admin_menu() if is_admin else get_user_menu()  # ✅ Исправлено: разделено на отдельные строки
+    await message.answer("Выберите дальнейшее действие:", reply_markup=keyboard)

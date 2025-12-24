@@ -8,10 +8,23 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, is_admin: bool, user_first_name: str):
+async def cmd_start(message: Message, is_admin: bool = False, user_first_name: str = None):
     """
     Стартовое сообщение + показ основного меню.
     """
+    # Если пользователь не прошел через middleware (не в whitelist)
+    if user_first_name is None:
+        user_first_name = message.from_user.first_name or "Пользователь"
+        await message.answer(
+            "❌ Доступ запрещён.\n\n"
+            "Этот бот доступен только сотрудникам компании.\n\n"
+            "Для получения доступа:\n"
+            "1. Отправьте /getid\n"
+            "2. Передайте ваш ID администратору\n"
+            "3. Дождитесь добавления в систему"
+        )
+        return
+    
     role = "Администратор" if is_admin else "Сотрудник"
 
     text = (

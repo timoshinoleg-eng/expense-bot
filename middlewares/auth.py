@@ -48,7 +48,44 @@ class AuthMiddleware(BaseMiddleware):
             logger.info(f"ℹ️ Команда /getid от {user_id} ({username})")
             return await handler(event, data)
         
-        # Проверяем whitelist
+        # Команда /start доступна всем (для первого контакта с ботом)
+        if event.text and event.text.startswith("/start"):
+            logger.info(f"ℹ️ Команда /start от {user_id} ({username})")
+            employees = self._get_cached_employees()
+            
+            if user_id not in employees:
+                # Пользователь не в whitelist - пропускаем в handler с минимальными данными
+                logger.info(f"ℹ️ /start от пользователя не в whitelist: {user_id}")
+                data["is_admin"] = False
+                data["user_id"] = user_id
+                data["user_first_name"] = event.from_user.first_name or "Пользователь"
+                data["user_last_name"] = event.from_user.last_name or ""
+                return await handler(event, data)
+            else:
+                # Пользователь в whitelist - проверяем статус и добавляем данные
+                emp_data = employees[user_id]
+                
+                # Проверяем статус (заблокирован или нет)
+                if emp_data.get("status") == "Заблокирован":
+                    logger.warning(f"🚫 Доступ запрещён: {user_id} ({username}) - заблокирован")
+                    await event.answer(
+                        "🚫 Ваш доступ заблокирован.\n"
+                        "Обратитесь к администратору для уточнения деталей."
+                    )
+                    return
+                
+                # Доступ разрешён - добавляем данные из whitelist
+                logger.info(
+                    f"✅ Доступ разрешён: {user_id} ({username}) - "
+                    f"{emp_data['first_name']} {emp_data['last_name']} ({emp_data['role']})"
+                )
+                data["is_admin"] = emp_data.get("role") == "Админ"
+                data["user_id"] = user_id
+                data["user_first_name"] = emp_data.get("first_name", "Пользователь")
+                data["user_last_name"] = emp_data.get("last_name", "")
+                return await handler(event, data)
+        
+        # Для всех остальных команд проверяем whitelist
         employees = self._get_cached_employees()
         
         if user_id not in employees:
