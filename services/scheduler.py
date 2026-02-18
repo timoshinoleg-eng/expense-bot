@@ -13,7 +13,6 @@ from utils.google_sheets import get_employees_from_sheet
 from utils.sheets_extended import (
     get_expenses_by_employee_and_period,
     get_employee_balance,
-    get_all_expenses,
     get_negative_balances,
     get_expenses_by_project,
     get_employees_with_subscription,

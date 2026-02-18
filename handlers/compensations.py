@@ -519,7 +519,7 @@ async def approve_compensation_request(callback: CallbackQuery, user_role: str =
     """Одобрить запрос на компенсацию из списка."""
     from utils.sheets_extended import (
         get_compensation_requests,
-        update_compensation_status_sheet,
+        update_compensation_status as update_compensation_status_sheet,
         update_employee_balance
     )
     
@@ -582,7 +582,7 @@ async def reject_compensation_request(callback: CallbackQuery, state: FSMContext
 @router.message(CompensationStates.entering_reject_reason)
 async def finish_reject_compensation(message: Message, state: FSMContext):
     """Завершить отклонение компенсации."""
-    from utils.sheets_extended import update_compensation_status_sheet
+    from utils.sheets_extended import update_compensation_status as update_compensation_status_sheet
     
     reason = message.text.strip()
     data = await state.get_data()
