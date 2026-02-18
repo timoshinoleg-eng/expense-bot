@@ -79,7 +79,8 @@ class AuthMiddleware(BaseMiddleware):
                     f"✅ Доступ разрешён: {user_id} ({username}) - "
                     f"{emp_data['first_name']} {emp_data['last_name']} ({emp_data['role']})"
                 )
-                data["is_admin"] = emp_data.get("role") == "Админ"
+                data["is_admin"] = emp_data.get("role") in ["владелец", "главбух", "контролер"]
+                data["user_role"] = emp_data.get("role", "подотчетник")
                 data["user_id"] = user_id
                 data["user_first_name"] = emp_data.get("first_name", "Пользователь")
                 data["user_last_name"] = emp_data.get("last_name", "")
@@ -118,7 +119,8 @@ class AuthMiddleware(BaseMiddleware):
         )
         
         # Добавляем данные пользователя в context
-        data["is_admin"] = emp_data.get("role") == "Админ"
+        data["is_admin"] = emp_data.get("role") in ["владелец", "главбух", "контролер"]
+        data["user_role"] = emp_data.get("role", "подотчетник")
         data["user_id"] = user_id
         data["user_first_name"] = emp_data.get("first_name", "Пользователь")
         data["user_last_name"] = emp_data.get("last_name", "")

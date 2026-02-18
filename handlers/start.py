@@ -8,7 +8,7 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, is_admin: bool = False, user_first_name: str = None):
+async def cmd_start(message: Message, is_admin: bool = False, user_first_name: str = None, user_role: str = None):
     """
     Стартовое сообщение + показ основного меню.
     """
@@ -25,11 +25,12 @@ async def cmd_start(message: Message, is_admin: bool = False, user_first_name: s
         )
         return
     
-    role = "Администратор" if is_admin else "Сотрудник"
+    # Отображаем реальную роль из таблицы
+    role_display = user_role if user_role else "Сотрудник"
 
     text = (
         f"Привет, {user_first_name}!\n"
-        f"Ваша роль: {role}\n\n"
+        f"Ваша роль: {role_display}\n\n"
         "Используйте кнопки внизу для работы с ботом.\n"
         "Команду /getid можно ввести вручную при необходимости."
     )
